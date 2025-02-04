@@ -1,3 +1,10 @@
+# Ignore everything
+/*
+
+# But not these files
+!irrigation_assumptions.Rmd
+
+
 .Rproj.user
 .Rhistory
 .RData
