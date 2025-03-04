@@ -13,6 +13,6 @@ Many global water models contain an irrigation module that simulates irrigation 
 We provide the code in .R, .rmd and .pdf along with the system requirements. Contact Seth N. Linga (sxl1405@student.bham.ac.uk / snplinga@gmail.com) for further information.
 
 ## Datasets included
-Here you can find the supplementary material and .xlsx datasets needed to replicate our work: 
+Here you can find the supplementary material and datasets needed to replicate our work: 
 * irrigation_assumptions_SM.xlsx : contains the directory of assumptions
 * assumptions.xlsx : results of this study
