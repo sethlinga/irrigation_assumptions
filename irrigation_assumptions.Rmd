@@ -14,6 +14,8 @@ output:
     number_sections: true
 ---
 
+\newpage
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
@@ -34,16 +36,16 @@ library(ggraph)
 library(tidygraph)
 library(ggforce)
 library(scales)
+library(ggalluvial)
 
-#setwd("/Users/sxl1405@student.bham.ac.uk/Library/CloudStorage/OneDrive-UniversityofBirmingham/code/irrigation_assumptions")
 getwd()
 ```
 
 # Number of assumptions
 
-```{r}
+```{r fig.width=10, fig.height=5, dpi=600}
 
-data_countA <- read_excel("nature.xlsx", sheet = "total")
+data_countA <- read_excel("assumptions.xlsx", sheet = "total")
 
 p_countA <- ggplot(data_countA, aes(y = fct_reorder(factor(Model), Total, .desc = FALSE), x = Total, fill = "grey50")) +
   geom_bar(stat = "identity") +
@@ -61,7 +63,7 @@ p_countA <- ggplot(data_countA, aes(y = fct_reorder(factor(Model), Total, .desc 
   ) +
   scale_fill_manual(values = "grey50")
 
-data_countB <- read_excel("timecount.xlsx") %>%
+data_countB <- read_excel("assumptions.xlsx", sheet = "study") %>%
   mutate(Year = as.numeric(sub(".*(\\d{4}).*", "\\1", Study))) %>%
   filter(!is.na(Year))
 
@@ -88,18 +90,14 @@ p_countB <- ggplot(data_countB, aes(x = Year, y = Model, size = `Count of assump
   scale_color_manual(values = "grey50")
 
 combined_count <- grid.arrange(p_countA, p_countB, ncol = 2, nrow = 1)
-
-#ggsave("count.png", plot = combined_count, width = 10, height = 5, dpi = 600)
-
-combined_count
-
+grid.draw(combined_count)
 ```
 
 # Nature of assumptions
 
-```{r}
+```{r fig.width=12, fig.height=5, dpi=600}
 
-data_aspectA <- read_excel("nature.xlsx", sheet = "count")
+data_aspectA <- read_excel("assumptions.xlsx", sheet = "nature")
 
 model_order_aspectA <- c("CLM4.5", "VIC", "MATSIRO", "PCR-GLOBWB", "LPJmL", "WaterGAP", "H08", "WBM",  "MPI-HM")
 
@@ -135,7 +133,7 @@ p_aspectA <- ggplot(data_aspectA_long, aes(x = Model, y = Ratio, fill = Nature))
     legend.position = "none"
   )
 
-data_aspectB <- read_excel("nature.xlsx", sheet = "aspect")
+data_aspectB <- read_excel("assumptions.xlsx", sheet = "aspect")
 
 data_aspectB_df <- data_aspectB %>%
   group_by(Model, Aspect) %>%
@@ -165,18 +163,15 @@ p_aspectB <- ggplot(data_aspectB_df, aes(x = Aspect, y = Proportion, fill = Natu
          size = guide_legend(title = "number of\nassumptions"))
 
 combined_aspect <- grid.arrange(p_aspectA, p_aspectB, ncol = 2, nrow = 1, widths = c(2, 3))
-
-#ggsave("aspectratio.png", plot = combined_aspect, width = 12, height = 5, dpi = 600)
-
-combined_aspect
+grid.draw(combined_aspect)
 
 ```
 
 # Evolution of assumptions (LPJmL)
 
-```{r}
+```{r fig.width=5, fig.height=4, dpi=600}
 
-data_code <- read_excel("code.xlsx") %>%
+data_code <- read_excel("assumptions.xlsx", sheet = "code") %>%
   filter(Model == "LPJmL") %>%
   mutate(UniqueID = paste(Code, Author, sep = "_")) %>%
   arrange(Code, Year) %>%
@@ -247,17 +242,14 @@ ggraph(graph_code, layout = custom_layout_code) +
   annotate("text", x = 17, y = 2009.5, label = "A", size = 5, color = "black") + 
   annotate("text", x = 64, y = 2013.5, label = "B", size = 5, color = "black")
 
-#ggsave("lpjml_assumptions.png", width = 5, height = 4, dpi = 600)
-
-
 
 ```
 
 # Sharing of assumptions
 
-```{r}
+```{r fig.width=6, fig.height=4, dpi=600}
 
-data_freq <- read_excel("freq.xlsx")
+data_freq <- read_excel("assumptions.xlsx", sheet = "freq")
 
 filtered_freq <- data_freq %>%
   filter(Frequency >= 2) %>%
@@ -305,19 +297,16 @@ p_normalized <- ggplot(assumption_summary, aes(x = Group, y = Percentage, fill =
   )
 
 combined_freq <- grid.arrange(p_hist, p_normalized, ncol = 2, widths = c(0.55, 0.45))
-
-#ggsave("freq.png", plot = combined_freq, width = 6, height = 4, dpi = 600)
-
-combined_freq
+grid.draw(combined_freq)
 
 ```
 
 # Network citation of pragmatic assumptions
 
-```{r}
+```{r fig.width=12, fig.height=6, dpi=600}
 
-nodes_net <- read_excel("combined_citations.xlsx", sheet = "nodes")
-edges_net <- read_excel("combined_citations.xlsx", sheet = "edges") %>% 
+nodes_net <- read_excel("assumptions.xlsx", sheet = "cite_nodes")
+edges_net <- read_excel("assumptions.xlsx", sheet = "cite_edges") %>% 
   filter(!is.na(Source) & !is.na(Target))
 
 nodes_net <- nodes_net %>% distinct(ID, .keep_all = TRUE)
@@ -378,8 +367,52 @@ final_plot <- grid.arrange(
   heights = c(4, 0.6)
 )
 
-# Save the final plot
-ggsave("combined_network.png", plot = final_plot, width = 12, height = 6, dpi = 600)
+grid.draw(final_plot)
 
-final_plot
 ```
+
+# Sankey diagram
+Below is the code for the sankey diagram of shared assumptions. First column of ampersand can be removed to display the plot in html format.
+```{r}
+##Load the nodes and links data from the Excel file
+#
+#nodes <- read_excel("assumptions.xlsx", sheet = "sankey_nodes")
+#links <- read_excel("assumptions.xlsx", sheet = "sankey_links")
+#
+## Adjust link column names and add color groupings
+#colnames(links) <- c("source", "target", "value")
+#links$group <- as.factor(links$source)
+#
+## Use a custom, muted color palette for a professional look
+#color_scale <- 'd3.scaleOrdinal().range(["#4E79A7", "#A0CBE8", "#F28E2B", "#FFBE7D", "#59A14F", "#8CD17D", "#B6992D", "#499894", "#86BCB6", "#FABFD2"])'
+#
+## Create Sankey diagram with adjusted color scale
+#p <- sankeyNetwork(
+#  Links = links,
+#  Nodes = nodes,
+#  Source = "source",
+#  Target = "target",
+#  Value = "value",
+#  NodeID = "Node",
+#  units = "TWh",
+#  fontSize = 12,
+#  nodeWidth = 1,
+#  margin = list(left = 350, right = 20),
+#  LinkGroup = "group",
+#  colourScale = color_scale,
+#  width = 800,
+#  height = 800
+#)
+#
+## Adjust label positioning in the diagram
+#p <- htmlwidgets::onRender(p, "
+#  function(el, x) {
+#    d3.selectAll('.node text')
+#      .style('text-anchor', 'start')
+#      .attr('dx', '15');
+#  }
+#")
+#
+#p
+```
+

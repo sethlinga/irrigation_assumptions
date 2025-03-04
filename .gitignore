@@ -3,6 +3,7 @@
 
 # But not these files
 !irrigation_assumptions.Rmd
+!README.md
 
 
 .Rproj.user
