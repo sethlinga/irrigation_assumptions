@@ -3,7 +3,7 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-Seth N. Linga, Carmen Aguiló, Joshua Larsen, Michela Massimi, Nanxin Wei, and Arnald Puy
+Seth N. Linga, Carmen Aguiló-Rivera, Joshua Larsen, Michela Massimi, Nanxin Wei, and Arnald Puy
 
 This is the R code of the paper, whose abstract is the following:
 
